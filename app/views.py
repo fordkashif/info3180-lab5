@@ -39,7 +39,7 @@ def before_request():
 def login():
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('index'))
-    form = LoginForm()
+    form = Myprofile()
     print app.config['OPENID_PROVIDERS']
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
@@ -49,9 +49,28 @@ def login():
                            form=form,
                            providers=app.config['OPENID_PROVIDERS'])
 @app.route('/')
+@login_required
 def home():
     """Render website's home page."""
     return render_template('home.html')
+    
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = Myprofile()
+    if request.method == "POST":
+        pass
+    # change this to actually validate the user
+    if form.username.data:
+        # login and validate the user...
+
+        # missing
+        # based on password and username
+        # get user id, load into session
+        user = load_user("1")
+        login_user(user)
+        #flash("Logged in successfully.")
+        return redirect(request.args.get("next") or url_for("home"))
+    return render_template("login.html", form=form)
 
 @app.route('/profile/', methods=['POST','GET'])
 def profile_add():
